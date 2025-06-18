@@ -7,13 +7,13 @@
     <h1>Список продуктов</h1>
     <ul>
         {% for product in products %}
-            <li>{{ product.name }} — {{ product.price }} — {{ product.category.name }} - {{product.stock}}</li>
+            <li><a href="{% url 'book_detail' product.pk %}">{{ product.name }}</a> — {{ product.price }} — {{ product.category.name }} - {{product.stock}}</li>
         {% endfor %}
     </ul>
     <h1>Список продуктов не в наличии</h1>
     <ul>
         {% for product in not_sale %}
-            <li>{{ product.name }} — {{ product.price }} — {{ product.category.name }} - Не в наличии</li>
+            <li><a href="{% url 'book_detail' product.pk %}">{{ product.name }}</a> — {{ product.price }} — {{ product.category.name }} - Не в наличии</li>
         {% endfor %}
     </ul>
 </body>
