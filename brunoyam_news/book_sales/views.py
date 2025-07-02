@@ -1,5 +1,5 @@
 from django.shortcuts import render, get_object_or_404
-from book_sales.models import Product
+from .models import Product
 
 def product_list(request):
     products = Product.objects.all()
