@@ -1,5 +1,6 @@
 from django.test import TestCase
 from .factories import CategoryFactory, ProductFactory, AuthorFactory
+from .services import get_product_for_sale
 
 class ModelsTestCase(TestCase):
 
@@ -74,3 +75,31 @@ class ModelsTestCase(TestCase):
     def test_author_string_representation(self):
         """Проверяем, что строковое представление автора корректно."""
         self.assertEqual(str(AuthorFactory.create(name='John Doe')), 'John Doe')
+
+class ProductServiceTestCase(TestCase):
+
+    def setUp(self):
+        # Создаем несколько категорий
+        self.category1 = CategoryFactory.create(name='Books')
+        self.category2 = CategoryFactory.create(name='Stationery')
+
+        # Создаем несколько продуктов с различным количеством на складе
+        self.product_in_stock = ProductFactory.create(name='In Stock Product', category=self.category1, stock=10)
+        self.product_out_of_stock = ProductFactory.create(name='Out of Stock Product', category=self.category2, stock=0)
+        self.product_in_stock_2 = ProductFactory.create(name='Another In Stock Product', category=self.category1, stock=5)
+
+    def test_get_product_for_sale(self):
+        """Проверяем, что функция возвращает правильный контекст для продуктов на продаже."""
+        context = get_product_for_sale()
+
+        # Проверяем, что продукты на продаже возвращаются корректно
+        self.assertIn(self.product_in_stock, context['products'])
+        self.assertIn(self.product_in_stock_2, context['products'])
+        self.assertNotIn(self.product_out_of_stock, context['products'])
+
+        # Проверяем, что недоступные продукты возвращаются корректно
+        self.assertIn(self.product_out_of_stock, context['not_sale'])
+
+        # Проверяем количество продуктов в контексте
+        self.assertEqual(len(context['products']), 2)  # Два продукта на продаже
+        self.assertEqual(len(context['not_sale']), 1)  # Один недоступный продукт

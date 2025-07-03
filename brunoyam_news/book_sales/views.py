@@ -1,13 +1,9 @@
 from django.shortcuts import render, get_object_or_404
+from .services import get_product_for_sale
 from .models import Product
 
 def product_list(request):
-    products = Product.objects.all()
-    products_for_sale = [product for product in products if product.stock!= 0]
-    not_sale = [product for product in products if product.stock== 0]
-
-    context =dict(products = products_for_sale, not_sale = not_sale)
-
+    context =get_product_for_sale()
     return render(request, 'product_list.html', context)
 
 def book_detail(request, pk):  # pk - первичный ключ книги
