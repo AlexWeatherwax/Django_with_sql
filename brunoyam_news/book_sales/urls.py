@@ -17,8 +17,9 @@ Including another URLconf
 
 
 from django.urls import path
-from .views import product_list, book_detail
+from .views import product_list, product_detail, contact_view
 urlpatterns = [
     path('', product_list, name='product_list'),
-     path('<int:pk>/', book_detail, name='book_detail'),
+     path('<int:pk>/', product_detail, name='product_detail'),
+    path('contact/', contact_view, name='contact')
 ]
