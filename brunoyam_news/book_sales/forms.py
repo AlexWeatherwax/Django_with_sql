@@ -1,26 +1,16 @@
 from django import forms
-from .models import Contact, ChatMessage, Review
+from .models import Message, Review
 
-class ContactForm(forms.ModelForm):
+class MessageForm(forms.ModelForm):
     class Meta:
-        model = Contact
-        fields = ['name', 'email', 'message']
+        model = Message
+        fields = ['name', 'message']
         widgets = {
             'message': forms.Textarea(attrs={'rows': 4}),
         }
         labels = {
-            'name': 'Ваше имя',
-            'email': 'Email',
-            'message': 'Сообщение',
-        }
-
-
-class ChatMessageForm(forms.ModelForm):
-    class Meta:
-        model = ChatMessage
-        fields = ['text']
-        widgets = {
-            'text': forms.Textarea(attrs={'rows': 4}),
+            'name': 'Ваше имя (оставьте пустым для анонимности)',
+            'message': 'Ваше сообщение',
         }
 class ReviewForm(forms.ModelForm):
     class Meta:

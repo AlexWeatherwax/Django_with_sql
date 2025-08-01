@@ -27,22 +27,14 @@ class Author(models.Model):
     def __str__(self):
         return self.name
 
-class Contact(models.Model):
-    name = models.CharField(max_length=100)
-    email = models.CharField(max_length=100)
-    message = models.TextField()
-    created_at = models.DateTimeField(auto_now_add=True)  # Время создания сообщения
+class Message(models.Model):
+    name = models.CharField(max_length=100, blank=True)  # Имя отправителя, может быть пустым для анонимных сообщений
+    message = models.TextField()  # Текст сообщения
+    created_at = models.DateTimeField(auto_now_add=True)  # Дата и время создания сообщения
+    is_chat_message = models.BooleanField(default=False)  # Флаг для определения, является ли это сообщением чата
 
     def __str__(self):
-        return self.name
-
-class ChatMessage(models.Model):
-    contact = models.ForeignKey(Contact, on_delete=models.CASCADE, related_name='chat_messages')
-    text = models.TextField()
-    created_at = models.DateTimeField(auto_now_add=True)
-
-    def __str__(self):
-        return f"{self.contact.name}: {self.text[:20]}"
+        return self.message
 
 class Review(models.Model):
     product = models.ForeignKey(Product, on_delete=models.CASCADE)

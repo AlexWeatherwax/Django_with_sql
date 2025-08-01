@@ -17,9 +17,9 @@ Including another URLconf
 
 
 from django.urls import path
-from .views import product_list, product_detail, contact_view
+from .views import product_list, product_detail, chat_view
 urlpatterns = [
     path('', product_list, name='product_list'),
      path('<int:pk>/', product_detail, name='product_detail'),
-    path('contact/', contact_view, name='contact')
+    path('contact/', chat_view, name='contact')
 ]

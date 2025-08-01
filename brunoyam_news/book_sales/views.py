@@ -1,10 +1,10 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from .services import get_product_for_sale
 from .models import Product
-from .forms import ContactForm, ChatMessageForm, ReviewForm
-from .models import Contact, ChatMessage, Review
+from .forms import MessageForm, ReviewForm
+from .models import Message, Review
 from django.core.paginator import Paginator
-from django.contrib import messages
+
 
 def product_list(request):
     context =get_product_for_sale()
@@ -19,23 +19,27 @@ def product_list(request):
     context['page_range'] = page_range  # Передаем диапазон страниц в контекст
     return render(request, 'product_list.html', context)
 
-def contact_view(request):
+def chat_view(request):
     if request.method == 'POST':
-        form = ContactForm(request.POST)
+        form = MessageForm(request.POST)
         if form.is_valid():
-            contact = form.save()  # Сохранение данных в базе данных
+            message = form.save(commit=False)
+            if not message.name.strip():  # Установка имени по умолчанию на "Аноним"
+                message.name = "Аноним"
+            message.is_chat_message = True  # Установка флага, чтобы обозначить как сообщение чата
+            message.save()
+            return redirect('contact')  # Перенаправление на страницу чата
 
-            # Создание отдельного сообщения для чата
-            chat_message = ChatMessage(contact=contact, text=contact.message)
-            chat_message.save()
-
-            messages.success(request, 'Ваше сообщение успешно отправлено!')
-            return redirect('contact')  # Перенаправление на ту же страницу
     else:
-        form = ContactForm()
-    chat_messages = ChatMessage.objects.all().order_by('-created_at')  # Получаем все сообщения для отображения
+        form = MessageForm()
 
-    return render(request, 'contact.html', {'form': form, 'chat_messages': chat_messages})
+    # Получение всех сообщений, относящихся к чату
+    chat_messages = Message.objects.filter(is_chat_message=True).order_by('-created_at')
+
+    return render(request, 'contact.html', {
+        'form': form,
+        'chat_messages': chat_messages,
+    })
 
 def product_detail(request, pk):
     book = get_object_or_404(Product, pk=pk)
